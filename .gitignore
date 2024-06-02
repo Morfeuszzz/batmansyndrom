@@ -2,6 +2,7 @@ node_modules
 docker-compose.override.yml
 
 .idea
+.vscode
 .DS_Store
 
 # Prevent another lockfile than package-lock.json (npm) from being created
