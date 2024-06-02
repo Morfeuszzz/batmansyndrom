@@ -227,15 +227,6 @@ const Login = React.memo(
             className={classNames(styles.cover, styles.fullHeight)}
           >
             <div className={styles.descriptionWrapperOverlay} />
-            <div className={styles.descriptionWrapper}>
-              <Header inverted as="h1" content="Planka" className={styles.descriptionTitle} />
-              <Header
-                inverted
-                as="h2"
-                content={t('common.projectManagement')}
-                className={styles.descriptionSubtitle}
-              />
-            </div>
           </Grid.Column>
         </Grid>
       </div>
