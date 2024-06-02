@@ -15,7 +15,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'Over Planka',
+      aboutBatmanSyndrom: 'Over Batman Syndrom',
       account: 'Account',
       actions: 'Acties',
       addAttachment_title: 'Bijlage toevoegen',

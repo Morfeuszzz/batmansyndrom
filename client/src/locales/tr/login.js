@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'E-posta adresi veya Kullanıcı adı',
       invalidEmailOrUsername: 'Geçersiz e-posta adresi veya kullanıcı adı',
       invalidPassword: 'Hatalı Şifre',
-      logInToPlanka: 'Giriş Yap',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Internet bağlantısı yok',
       pageNotFound_title: 'Sayfa bulunamadı',
       password: 'Şifre',

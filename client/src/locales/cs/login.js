@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'E-mail nebo uživatelské jméno',
       invalidEmailOrUsername: 'Nesprávný e-mail nebo uživatelské jméno',
       invalidPassword: 'Nesprávné heslo',
-      logInToPlanka: 'Přihlásit se do Planka',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Bez připojení k internetu',
       pageNotFound_title: 'Stránka nenalezena',
       password: 'Heslo',

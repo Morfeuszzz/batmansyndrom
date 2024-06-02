@@ -11,7 +11,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'Про Planka',
+      aboutBatmanSyndrom: 'Про Batman Syndrom',
       account: 'Обліковий запис',
       actions: 'Дії',
       addAttachment_title: 'Додати Вкладення',

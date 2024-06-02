@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'Имейл или потребителско име',
       invalidEmailOrUsername: 'Невалиден имейл или потребителско име',
       invalidPassword: 'Невалидна парола',
-      logInToPlanka: 'Влезте в Planka',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Няма интернет връзка',
       pageNotFound_title: 'Страницата не е намерена',
       password: 'Парола',

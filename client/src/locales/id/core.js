@@ -15,7 +15,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'Tentang Planka',
+      aboutBatmanSyndrom: 'Tentang Batman Syndrom',
       account: 'Akun',
       actions: 'Tindakan',
       addAttachment_title: 'Tambah Lampiran',

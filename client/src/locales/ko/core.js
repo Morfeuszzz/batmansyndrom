@@ -15,7 +15,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'Planka에 대해서',
+      aboutBatmanSyndrom: 'Batman Syndrom에 대해서',
       account: '계정',
       actions: '활동',
       addAttachment_title: '첨부 파일 추가',

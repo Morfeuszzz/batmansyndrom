@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'E-mail или имя пользователя',
       invalidEmailOrUsername: 'Неверный e-mail или имя пользователя',
       invalidPassword: 'Неверный пароль',
-      logInToPlanka: 'Вход в Planka',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Нет соединения',
       pageNotFound: 'Страница не найдена',
       password: 'Пароль',

@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'Correo o nombre de usuario',
       invalidEmailOrUsername: 'Correo o nombre de usuario incorrecto',
       invalidPassword: 'Contraseña incorrecta',
-      logInToPlanka: 'Iniciar sesión en Planka',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Sin conexión a internet',
       pageNotFound_title: 'Página no encontrada',
       password: 'Contraseña',

@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'E-mail yoki foydalanuvchi nomi',
       invalidEmailOrUsername: "Noto'g'ri e-mail yoki foydalanuvchi nomi",
       invalidPassword: "Noto'g'ri parol",
-      logInToPlanka: 'Planka ga Kirish',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: "Internet bog'lanishi yo'q",
       pageNotFound_title: 'Sahifa Topilmadi',
       password: 'Parol',

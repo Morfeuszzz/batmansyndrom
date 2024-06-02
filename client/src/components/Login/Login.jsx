@@ -147,7 +147,7 @@ const Login = React.memo(
                   <Header
                     as="h1"
                     textAlign="center"
-                    content={t('common.logInToPlanka')}
+                    content={t('common.logInToBatmanSyndrom')}
                     className={styles.formTitle}
                   />
                   <div>

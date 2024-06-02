@@ -15,7 +15,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'За Planka',
+      aboutBatmanSyndrom: 'За Batman Syndrom',
       account: 'Акаунт',
       actions: 'Действия',
       addAttachment_title: 'Добавяне на прикачен файл',

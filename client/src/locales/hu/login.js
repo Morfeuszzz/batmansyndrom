@@ -4,7 +4,7 @@ export default {
       emailOrUsername: 'E-mail vagy felhasználó',
       invalidEmailOrUsername: 'Érvénytelen e-mail vagy felhasználó',
       invalidPassword: 'Érvénytelen jelszó',
-      logInToPlanka: 'Plankába belépés',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: 'Nincs internet kapcsolat',
       pageNotFound_title: 'Az oldal nem található',
       password: 'Jelszó',

@@ -15,7 +15,7 @@ export default {
 
   translation: {
     common: {
-      aboutPlanka: 'O aplikaci Planka',
+      aboutBatmanSyndrom: 'O aplikaci Batman Syndrom',
       account: 'Účet',
       actions: 'Akce',
       addAttachment_title: 'Přidat přílohu',

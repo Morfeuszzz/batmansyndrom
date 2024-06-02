@@ -4,7 +4,7 @@ export default {
       emailOrUsername: '이메일 혹은 사용자 이름',
       invalidEmailOrUsername: '이메일 혹은 사용자 이름이 유효하지 않습니다',
       invalidPassword: '유효하지 않은 비밀번호',
-      logInToPlanka: 'Planka에 로그인',
+      logInToBatmanSyndrom: 'Escape the Matrix',
       noInternetConnection: '인터넷 연결이 없음',
       pageNotFound_title: '페이지를 찾을 수 없습니다',
       password: '비밀번호',
