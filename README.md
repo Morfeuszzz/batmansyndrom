@@ -25,10 +25,6 @@ There are many ways to install Planka, [check them out](https://docs.planka.clou
 
 For configuration, please see the [configuration section](https://docs.planka.cloud/docs/category/configuration).
 
-## Development
-
-See the [development section](https://docs.planka.cloud/docs/Development).
-
 ## Tech stack
 
 - React, Redux, Redux-Saga, Redux-ORM, Semantic UI React, react-beautiful-dnd
