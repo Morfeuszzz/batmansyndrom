@@ -191,7 +191,7 @@ export default class extends BaseModel {
         break;
       case ActionTypes.CARD_CREATE_HANDLE: {
         const cardModel = Card.upsert(payload.card);
-        cardModel.users.add(cardModel.creatorUserId);
+        cardModel.users.add(cardModel.creatorUserId.attr());
         payload.cardMemberships.forEach(({ userId }) => {
           cardModel.users.add(userId);
         });
