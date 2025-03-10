@@ -1,9 +1,10 @@
-const path = require('path');
-const rimraf = require('rimraf');
-
 module.exports = {
   inputs: {
     record: {
+      type: 'ref',
+      required: true,
+    },
+    project: {
       type: 'ref',
       required: true,
     },
@@ -11,7 +12,15 @@ module.exports = {
       type: 'ref',
       required: true,
     },
+    list: {
+      type: 'ref',
+      required: true,
+    },
     card: {
+      type: 'ref',
+      required: true,
+    },
+    actorUser: {
       type: 'ref',
       required: true,
     },
@@ -27,6 +36,10 @@ module.exports = {
         values: {
           coverAttachmentId: null,
         },
+        project: inputs.project,
+        board: inputs.board,
+        list: inputs.list,
+        actorUser: inputs.actorUser,
         request: inputs.request,
       });
     }
@@ -34,8 +47,12 @@ module.exports = {
     const attachment = await Attachment.archiveOne(inputs.record.id);
 
     if (attachment) {
+      const fileManager = sails.hooks['file-manager'].getInstance();
+
       try {
-        rimraf.sync(path.join(sails.config.custom.attachmentsPath, attachment.dirname));
+        await fileManager.deleteDir(
+          `${sails.config.custom.attachmentsPathSegment}/${attachment.dirname}`,
+        );
       } catch (error) {
         console.warn(error.stack); // eslint-disable-line no-console
       }
@@ -48,6 +65,20 @@ module.exports = {
         },
         inputs.request,
       );
+
+      sails.helpers.utils.sendWebhooks.with({
+        event: 'attachmentDelete',
+        data: {
+          item: attachment,
+          included: {
+            projects: [inputs.project],
+            boards: [inputs.board],
+            lists: [inputs.list],
+            cards: [inputs.card],
+          },
+        },
+        user: inputs.actorUser,
+      });
     }
 
     return attachment;

@@ -21,6 +21,14 @@
       background: #ebeef0;
       color: #516b7a;
     }
+
+    @media only screen and (max-width: 797px) {
+      &:focus,
+      &:active {
+        background: #ebeef0;
+        color: #516b7a;
+      }
+    }
   }
 
   .attachment {
@@ -29,6 +37,13 @@
     margin: 0 0 6px 0;
     max-width: 100%;
     vertical-align: top;
+  }
+
+  .attachmentContent {
+    color: #6a808b;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 0px 3px;
   }
 
   .attachmentLeft {
@@ -54,6 +69,12 @@
     border-radius: 3px;
     box-shadow: 0 1px 0 #ccc;
     position: relative;
+
+    @media only screen and (max-width: 797px) {
+      .target {
+        opacity: 1;
+      }
+    }
 
     &:hover {
       background: #f5f6f7;

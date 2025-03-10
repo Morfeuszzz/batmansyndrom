@@ -7,6 +7,7 @@ import { useDidUpdate, useToggle } from '../../lib/hooks';
 import { Input, Popup } from '../../lib/custom-ui';
 
 import { useForm } from '../../hooks';
+import parseTime from '../../utils/parse-time';
 
 import styles from './DueDateEditStep.module.scss';
 
@@ -66,14 +67,18 @@ const DueDateEditStep = React.memo(({ defaultValue, onUpdate, onBack, onClose })
       return;
     }
 
-    const value = t('format:dateTime', {
+    let value = t('format:dateTime', {
       postProcess: 'parseDate',
       value: `${data.date} ${data.time}`,
     });
 
     if (Number.isNaN(value.getTime())) {
-      timeField.current.select();
-      return;
+      value = parseTime(data.time, nullableDate);
+
+      if (Number.isNaN(value.getTime())) {
+        timeField.current.select();
+        return;
+      }
     }
 
     if (!defaultValue || value.getTime() !== defaultValue.getTime()) {

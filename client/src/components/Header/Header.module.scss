@@ -87,7 +87,12 @@
   }
 
   .userName {
+    display: none;
     margin-right: 10px;
+
+    @media only screen and (min-width: 797px) {
+      display: block;
+    }
   }
 
   .wrapper {

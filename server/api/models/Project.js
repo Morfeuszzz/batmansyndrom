@@ -79,11 +79,13 @@ module.exports = {
   },
 
   customToJSON() {
+    const fileManager = sails.hooks['file-manager'].getInstance();
+
     return {
       ..._.omit(this, ['backgroundImage']),
       backgroundImage: this.backgroundImage && {
-        url: `${sails.config.custom.projectBackgroundImagesUrl}/${this.backgroundImage.dirname}/original.${this.backgroundImage.extension}`,
-        coverUrl: `${sails.config.custom.projectBackgroundImagesUrl}/${this.backgroundImage.dirname}/cover-336.${this.backgroundImage.extension}`,
+        url: `${fileManager.buildUrl(`${sails.config.custom.projectBackgroundImagesPathSegment}/${this.backgroundImage.dirname}/original.${this.backgroundImage.extension}`)}`,
+        coverUrl: `${fileManager.buildUrl(`${sails.config.custom.projectBackgroundImagesPathSegment}/${this.backgroundImage.dirname}/cover-336.${this.backgroundImage.extension}`)}`,
       },
     };
   },

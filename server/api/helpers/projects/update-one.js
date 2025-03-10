@@ -1,6 +1,3 @@
-const path = require('path');
-const rimraf = require('rimraf');
-
 const valuesValidator = (value) => {
   if (!_.isPlainObject(value)) {
     return false;
@@ -26,6 +23,10 @@ module.exports = {
     values: {
       type: 'json',
       custom: valuesValidator,
+      required: true,
+    },
+    actorUser: {
+      type: 'ref',
       required: true,
     },
     request: {
@@ -82,12 +83,11 @@ module.exports = {
         (!project.backgroundImage ||
           project.backgroundImage.dirname !== inputs.record.backgroundImage.dirname)
       ) {
+        const fileManager = sails.hooks['file-manager'].getInstance();
+
         try {
-          rimraf.sync(
-            path.join(
-              sails.config.custom.projectBackgroundImagesPath,
-              inputs.record.backgroundImage.dirname,
-            ),
+          await fileManager.deleteDir(
+            `${sails.config.custom.projectBackgroundImagesPathSegment}/${inputs.record.backgroundImage.dirname}`,
           );
         } catch (error) {
           console.warn(error.stack); // eslint-disable-line no-console
@@ -107,6 +107,17 @@ module.exports = {
           },
           inputs.request,
         );
+      });
+
+      sails.helpers.utils.sendWebhooks.with({
+        event: 'projectUpdate',
+        data: {
+          item: project,
+        },
+        prevData: {
+          item: inputs.record,
+        },
+        user: inputs.actorUser,
       });
     }
 

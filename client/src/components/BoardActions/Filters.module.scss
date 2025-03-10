@@ -50,6 +50,10 @@
     transition: width 0.2s ease;
     width: 280px;
 
+    @media only screen and (max-width: 797px) {
+      width: 220px;
+    }
+
     input {
       font-size: 13px;
     }

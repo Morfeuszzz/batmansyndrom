@@ -1,6 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-const rimraf = require('rimraf');
+const { rimraf } = require('rimraf');
 const { v4: uuid } = require('uuid');
 const sharp = require('sharp');
 
@@ -32,10 +30,10 @@ module.exports = {
       throw 'fileIsNotImage';
     }
 
-    const dirname = uuid();
-    const rootPath = path.join(sails.config.custom.projectBackgroundImagesPath, dirname);
+    const fileManager = sails.hooks['file-manager'].getInstance();
 
-    fs.mkdirSync(rootPath);
+    const dirname = uuid();
+    const dirPathSegment = `${sails.config.custom.projectBackgroundImagesPathSegment}/${dirname}`;
 
     let { width, pageHeight: height = metadata.height } = metadata;
     if (metadata.orientation && metadata.orientation > 4) {
@@ -45,9 +43,15 @@ module.exports = {
     const extension = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
 
     try {
-      await image.toFile(path.join(rootPath, `original.${extension}`));
+      const originalBuffer = await image.toBuffer();
 
-      await image
+      await fileManager.save(
+        `${dirPathSegment}/original.${extension}`,
+        originalBuffer,
+        inputs.file.type,
+      );
+
+      const cover336Buffer = await image
         .resize(
           336,
           200,
@@ -57,10 +61,18 @@ module.exports = {
               }
             : undefined,
         )
-        .toFile(path.join(rootPath, `cover-336.${extension}`));
+        .toBuffer();
+
+      await fileManager.save(
+        `${dirPathSegment}/cover-336.${extension}`,
+        cover336Buffer,
+        inputs.file.type,
+      );
     } catch (error1) {
+      console.warn(error1.stack); // eslint-disable-line no-console
+
       try {
-        rimraf.sync(rootPath);
+        fileManager.deleteDir(dirPathSegment);
       } catch (error2) {
         console.warn(error2.stack); // eslint-disable-line no-console
       }
@@ -69,7 +81,7 @@ module.exports = {
     }
 
     try {
-      rimraf.sync(inputs.file.fd);
+      await rimraf(inputs.file.fd);
     } catch (error) {
       console.warn(error.stack); // eslint-disable-line no-console
     }

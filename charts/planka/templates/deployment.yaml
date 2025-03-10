@@ -11,6 +11,10 @@ spec:
   selector:
     matchLabels:
       {{- include "planka.selectorLabels" . | nindent 6 }}
+  {{- if .Values.persistence.enabled }}
+  strategy:
+    type: Recreate
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -63,6 +67,20 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+          {{- if .Values.extraEnv }}
+          {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+          {{- if  .value }}
+              value: {{ .value | quote}}
+          {{- end }}
+          {{- if .valueFrom }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .valueFrom.secretName }}
+                  key: {{ .valueFrom.key }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
           {{- if not .Values.postgresql.enabled }}
           {{- if .Values.existingDburlSecret }}
             - name: DATABASE_URL
@@ -78,7 +96,7 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: planka-postgresql-svcbind-custom-user
+                  name: {{ include "planka.fullname" . }}-postgresql-svcbind-custom-user
                   key: uri
           {{- end }}
             - name: BASE_URL
@@ -90,17 +108,37 @@ spec:
               value: http://localhost:3000
               {{- end }}
             - name: SECRET_KEY
+              {{- if .Values.existingSecretkeySecret }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecretkeySecret }}
+                  key: key
+              {{- else }}
               value: {{ required "A secret key needs to be generated using 'openssl rand -hex 64' and assigned to secretkey." .Values.secretkey }}
+              {{- end }}
             - name: TRUST_PROXY
               value: "0"
             - name: DEFAULT_ADMIN_EMAIL
               value: {{ .Values.admin_email }}
-            - name: DEFAULT_ADMIN_PASSWORD
-              value: {{ .Values.admin_password }}
             - name: DEFAULT_ADMIN_NAME
               value: {{ .Values.admin_name }}
+            {{- if .Values.existingAdminCredsSecret }}
+            - name: DEFAULT_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingAdminCredsSecret }}
+                  key: username
+            - name: DEFAULT_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingAdminCredsSecret }}
+                  key: password
+            {{- else }}
             - name: DEFAULT_ADMIN_USERNAME
               value: {{ .Values.admin_username }}
+            - name: DEFAULT_ADMIN_PASSWORD
+              value: {{ .Values.admin_password }}
+            {{- end }}
           {{ range $k, $v := .Values.env }}
             - name: {{ $k | quote }}
               value: {{ $v | quote }}

@@ -21,6 +21,11 @@ module.exports = {
       type: 'string',
       isNotEmptyString: true,
     },
+    color: {
+      type: 'string',
+      isIn: List.COLORS,
+      allowNull: true,
+    },
   },
 
   exits: {
@@ -35,12 +40,15 @@ module.exports = {
   async fn(inputs) {
     const { currentUser } = this.req;
 
-    let { list } = await sails.helpers.lists
+    const path = await sails.helpers.lists
       .getProjectPath(inputs.id)
       .intercept('pathNotFound', () => Errors.LIST_NOT_FOUND);
 
+    let { list } = path;
+    const { board, project } = path;
+
     const boardMembership = await BoardMembership.findOne({
-      boardId: list.boardId,
+      boardId: board.id,
       userId: currentUser.id,
     });
 
@@ -52,11 +60,14 @@ module.exports = {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
-    const values = _.pick(inputs, ['position', 'name']);
+    const values = _.pick(inputs, ['position', 'name', 'color']);
 
     list = await sails.helpers.lists.updateOne.with({
       values,
+      project,
+      board,
       record: list,
+      actorUser: currentUser,
       request: this.req,
     });
 

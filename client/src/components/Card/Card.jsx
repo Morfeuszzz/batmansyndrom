@@ -23,13 +23,16 @@ const Card = React.memo(
     id,
     index,
     name,
+    description,
     dueDate,
+    isDueDateCompleted,
     stopwatch,
     coverUrl,
     boardId,
     listId,
     projectId,
     isPersisted,
+    attachmentsTotal,
     notificationsTotal,
     users,
     labels,
@@ -105,7 +108,11 @@ const Card = React.memo(
           )}
           <div className={styles.name}>{name}</div>
           {tasks.length > 0 && <Tasks items={tasks} />}
-          {(dueDate || stopwatch || notificationsTotal > 0) && (
+          {(description ||
+            dueDate ||
+            stopwatch ||
+            attachmentsTotal > 0 ||
+            notificationsTotal > 0) && (
             <span className={styles.attachments}>
               {notificationsTotal > 0 && (
                 <span
@@ -120,7 +127,7 @@ const Card = React.memo(
               )}
               {dueDate && (
                 <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-                  <DueDate value={dueDate} size="tiny" />
+                  <DueDate value={dueDate} isCompleted={isDueDateCompleted} size="tiny" />
                 </span>
               )}
               {stopwatch && (
@@ -132,6 +139,21 @@ const Card = React.memo(
                     size="tiny"
                     onClick={canEdit ? handleToggleStopwatchClick : undefined}
                   />
+                </span>
+              )}
+              {description && (
+                <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+                  <span className={styles.attachmentContent}>
+                    <Icon name="align left" />
+                  </span>
+                </span>
+              )}
+              {attachmentsTotal > 0 && (
+                <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+                  <span className={styles.attachmentContent}>
+                    <Icon name="attach" />
+                    {attachmentsTotal}
+                  </span>
                 </span>
               )}
             </span>
@@ -220,13 +242,16 @@ Card.propTypes = {
   id: PropTypes.string.isRequired,
   index: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
+  description: PropTypes.string,
   dueDate: PropTypes.instanceOf(Date),
+  isDueDateCompleted: PropTypes.bool,
   stopwatch: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   coverUrl: PropTypes.string,
   boardId: PropTypes.string.isRequired,
   listId: PropTypes.string.isRequired,
   projectId: PropTypes.string.isRequired,
   isPersisted: PropTypes.bool.isRequired,
+  attachmentsTotal: PropTypes.number.isRequired,
   notificationsTotal: PropTypes.number.isRequired,
   /* eslint-disable react/forbid-prop-types */
   users: PropTypes.array.isRequired,
@@ -254,7 +279,9 @@ Card.propTypes = {
 };
 
 Card.defaultProps = {
+  description: undefined,
   dueDate: undefined,
+  isDueDateCompleted: undefined,
   stopwatch: undefined,
   coverUrl: undefined,
 };
