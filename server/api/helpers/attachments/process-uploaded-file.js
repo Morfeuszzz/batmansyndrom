@@ -1,10 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const rimraf = require('rimraf');
-const moveFile = require('move-file');
-const filenamify = require('filenamify');
+const { rimraf } = require('rimraf');
 const { v4: uuid } = require('uuid');
 const sharp = require('sharp');
+
+const filenamify = require('../../../utils/filenamify');
 
 module.exports = {
   inputs: {
@@ -15,18 +13,19 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const dirname = uuid();
+    const fileManager = sails.hooks['file-manager'].getInstance();
 
-    // FIXME: https://github.com/sindresorhus/filenamify/issues/13
+    const dirname = uuid();
+    const dirPathSegment = `${sails.config.custom.attachmentsPathSegment}/${dirname}`;
     const filename = filenamify(inputs.file.filename);
 
-    const rootPath = path.join(sails.config.custom.attachmentsPath, dirname);
-    const filePath = path.join(rootPath, filename);
+    const filePath = await fileManager.move(
+      inputs.file.fd,
+      `${dirPathSegment}/${filename}`,
+      inputs.file.type,
+    );
 
-    fs.mkdirSync(rootPath);
-    await moveFile(inputs.file.fd, filePath);
-
-    let image = sharp(filePath, {
+    let image = sharp(filePath || inputs.file.fd, {
       animated: true,
     });
 
@@ -43,9 +42,6 @@ module.exports = {
     };
 
     if (metadata && !['svg', 'pdf'].includes(metadata.format)) {
-      const thumbnailsPath = path.join(rootPath, 'thumbnails');
-      fs.mkdirSync(thumbnailsPath);
-
       let { width, pageHeight: height = metadata.height } = metadata;
       if (metadata.orientation && metadata.orientation > 4) {
         [image, width, height] = [image.rotate(), height, width];
@@ -55,7 +51,7 @@ module.exports = {
       const thumbnailsExtension = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
 
       try {
-        await image
+        const resizeBuffer = await image
           .resize(
             256,
             isPortrait ? 320 : undefined,
@@ -65,19 +61,29 @@ module.exports = {
                 }
               : undefined,
           )
-          .toFile(path.join(thumbnailsPath, `cover-256.${thumbnailsExtension}`));
+          .toBuffer();
+
+        await fileManager.save(
+          `${dirPathSegment}/thumbnails/cover-256.${thumbnailsExtension}`,
+          resizeBuffer,
+          inputs.file.type,
+        );
 
         fileData.image = {
           width,
           height,
           thumbnailsExtension,
         };
-      } catch (error1) {
-        try {
-          rimraf.sync(thumbnailsPath);
-        } catch (error2) {
-          console.warn(error2.stack); // eslint-disable-line no-console
-        }
+      } catch (error) {
+        console.warn(error.stack); // eslint-disable-line no-console
+      }
+    }
+
+    if (!filePath) {
+      try {
+        await rimraf(inputs.file.fd);
+      } catch (error) {
+        console.warn(error.stack); // eslint-disable-line no-console
       }
     }
 

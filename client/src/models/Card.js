@@ -20,6 +20,7 @@ export default class extends BaseModel {
       relatedName: 'ownCards',
     }),
     dueDate: attr(),
+    isDueDateCompleted: attr(),
     stopwatch: attr(),
     isSubscribed: attr({
       getDefault: () => false,
@@ -180,7 +181,6 @@ export default class extends BaseModel {
         break;
       case ActionTypes.CARD_CREATE:
       case ActionTypes.CARD_UPDATE__SUCCESS:
-      case ActionTypes.CARD_UPDATE_HANDLE:
         Card.upsert(payload.card);
 
         break;
@@ -202,8 +202,49 @@ export default class extends BaseModel {
 
         break;
       }
-      case ActionTypes.CARD_UPDATE:
-        Card.withId(payload.id).update(payload.data);
+      case ActionTypes.CARD_UPDATE: {
+        const cardModel = Card.withId(payload.id);
+
+        // TODO: introduce separate action?
+        if (payload.data.boardId && payload.data.boardId !== cardModel.boardId) {
+          cardModel.deleteWithRelated();
+        } else {
+          cardModel.update({
+            ...payload.data,
+            ...(payload.data.dueDate === null && {
+              isDueDateCompleted: null,
+            }),
+            ...(payload.data.dueDate &&
+              !cardModel.dueDate && {
+                isDueDateCompleted: false,
+              }),
+          });
+        }
+
+        break;
+      }
+      case ActionTypes.CARD_UPDATE_HANDLE:
+        if (payload.isFetched) {
+          const cardModel = Card.withId(payload.card.id);
+
+          if (cardModel) {
+            cardModel.deleteWithRelated();
+          }
+        }
+
+        Card.upsert(payload.card);
+
+        if (payload.cardMemberships) {
+          payload.cardMemberships.forEach(({ cardId, userId }) => {
+            Card.withId(cardId).users.add(userId);
+          });
+        }
+
+        if (payload.cardLabels) {
+          payload.cardLabels.forEach(({ cardId, labelId }) => {
+            Card.withId(cardId).labels.add(labelId);
+          });
+        }
 
         break;
       case ActionTypes.CARD_DUPLICATE: {
@@ -217,6 +258,7 @@ export default class extends BaseModel {
             'name',
             'description',
             'dueDate',
+            'isDueDateCompleted',
             'stopwatch',
           ]),
           ...payload.card,

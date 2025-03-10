@@ -18,6 +18,11 @@ const createMessage = (error) => {
   }
 
   switch (error.message) {
+    case 'Invalid credentials':
+      return {
+        type: 'error',
+        content: 'common.invalidCredentials',
+      };
     case 'Invalid email or username':
       return {
         type: 'error',
@@ -116,6 +121,7 @@ const Login = React.memo(
     useEffect(() => {
       if (wasSubmitting && !isSubmitting && error) {
         switch (error.message) {
+          case 'Invalid credentials':
           case 'Invalid email or username':
             emailOrUsernameField.current.select();
 
@@ -227,6 +233,15 @@ const Login = React.memo(
             className={classNames(styles.cover, styles.fullHeight)}
           >
             <div className={styles.descriptionWrapperOverlay} />
+            <div className={styles.descriptionWrapper}>
+              <Header inverted as="h1" content="Batman Syndrom" className={styles.descriptionTitle} />
+              <Header
+                inverted
+                as="h2"
+                content={t('common.projectManagement')}
+                className={styles.descriptionSubtitle}
+              />
+            </div>
           </Grid.Column>
         </Grid>
       </div>

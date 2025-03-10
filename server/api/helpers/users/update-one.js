@@ -1,6 +1,4 @@
-const path = require('path');
 const bcrypt = require('bcrypt');
-const rimraf = require('rimraf');
 const { v4: uuid } = require('uuid');
 
 const valuesValidator = (value) => {
@@ -38,7 +36,7 @@ module.exports = {
       custom: valuesValidator,
       required: true,
     },
-    user: {
+    actorUser: {
       type: 'ref',
       required: true,
     },
@@ -62,14 +60,14 @@ module.exports = {
     let isOnlyPasswordChange = false;
 
     if (!_.isUndefined(values.password)) {
-      Object.assign(values, {
-        password: bcrypt.hashSync(values.password, 10),
-        passwordChangedAt: new Date().toISOString(),
-      });
-
       if (Object.keys(values).length === 1) {
         isOnlyPasswordChange = true;
       }
+
+      Object.assign(values, {
+        password: bcrypt.hashSync(values.password, 10),
+        passwordChangedAt: new Date().toUTCString(), // FIXME: hack
+      });
     }
 
     if (values.username) {
@@ -101,8 +99,12 @@ module.exports = {
         inputs.record.avatar &&
         (!user.avatar || user.avatar.dirname !== inputs.record.avatar.dirname)
       ) {
+        const fileManager = sails.hooks['file-manager'].getInstance();
+
         try {
-          rimraf.sync(path.join(sails.config.custom.userAvatarsPath, inputs.record.avatar.dirname));
+          await fileManager.deleteDir(
+            `${sails.config.custom.userAvatarsPathSegment}/${inputs.record.avatar.dirname}`,
+          );
         } catch (error) {
           console.warn(error.stack); // eslint-disable-line no-console
         }
@@ -118,7 +120,7 @@ module.exports = {
           inputs.request,
         );
 
-        if (user.id === inputs.user.id && inputs.request && inputs.request.isSocket) {
+        if (user.id === inputs.actorUser.id && inputs.request && inputs.request.isSocket) {
           const tempRoom = uuid();
 
           sails.sockets.addRoomMembersToRooms(`@user:${user.id}`, tempRoom, () => {
@@ -152,6 +154,17 @@ module.exports = {
             },
             inputs.request,
           );
+        });
+
+        sails.helpers.utils.sendWebhooks.with({
+          event: 'userUpdate',
+          data: {
+            item: user,
+          },
+          prevData: {
+            item: inputs.record,
+          },
+          user: inputs.actorUser,
         });
       }
     }

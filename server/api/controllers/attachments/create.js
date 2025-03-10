@@ -1,6 +1,3 @@
-const util = require('util');
-const { v4: uuid } = require('uuid');
-
 const Errors = {
   NOT_ENOUGH_RIGHTS: {
     notEnoughRights: 'Not enough rights',
@@ -44,12 +41,12 @@ module.exports = {
   async fn(inputs, exits) {
     const { currentUser } = this.req;
 
-    const { card } = await sails.helpers.cards
+    const { card, list, board, project } = await sails.helpers.cards
       .getProjectPath(inputs.cardId)
       .intercept('pathNotFound', () => Errors.CARD_NOT_FOUND);
 
     const boardMembership = await BoardMembership.findOne({
-      boardId: card.boardId,
+      boardId: board.id,
       userId: currentUser.id,
     });
 
@@ -61,16 +58,9 @@ module.exports = {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
-    const upload = util.promisify((options, callback) =>
-      this.req.file('file').upload(options, (error, files) => callback(error, files)),
-    );
-
     let files;
     try {
-      files = await upload({
-        saveAs: uuid(),
-        maxBytes: null,
-      });
+      files = await sails.helpers.utils.receiveFile('file', this.req);
     } catch (error) {
       return exits.uploadError(error.message); // TODO: add error
     }
@@ -83,6 +73,9 @@ module.exports = {
     const fileData = await sails.helpers.attachments.processUploadedFile(file);
 
     const attachment = await sails.helpers.attachments.createOne.with({
+      project,
+      board,
+      list,
       values: {
         ...fileData,
         card,
